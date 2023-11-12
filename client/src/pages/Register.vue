@@ -69,6 +69,7 @@ export default {
         isuNumber: '',
         email: '',
         password: '',
+        type: '', // Добавляем поле для указания роли пользователя
       },
     };
   },
@@ -89,8 +90,14 @@ export default {
       return this.user.password.length >= 3;
     },
     isFormValid() {
-      return this.validateName && this.validateIsuNumber && this.validateEmail && this.validatePassword;
-    }
+      return (
+          this.validateName &&
+          this.validateIsuNumber &&
+          this.validateEmail &&
+          this.validatePassword &&
+          this.user.type !== ''
+      );
+    },
   },
   methods: {
     changeTab(tab) {
@@ -98,9 +105,7 @@ export default {
     },
     submitForm() {
       if (this.isFormValid) {
-        const apiUrl = this.activeTab === 'student' ? '/api/register/student' : '/api/register/teacher';
-
-        fetch(apiUrl, {
+        fetch('/api/register/', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
