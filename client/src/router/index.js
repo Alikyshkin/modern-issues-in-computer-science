@@ -18,6 +18,11 @@ const routes = [
         component: Analytics
     },
     {
+        path: '/tests-list',
+        name: 'TestsList',
+        component: TestsList
+    },
+    {
         path: '/auth',
         name: 'Auth',
         component: Auth
