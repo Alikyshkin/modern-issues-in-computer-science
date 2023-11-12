@@ -1,11 +1,11 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import Home from '../components/pages/Home.vue'
-import Analytics from '../components/pages/Analytics.vue'
-import Auth from '../components/pages/Auth.vue'
-import CreateTest from '../components/pages/CreateTest.vue'
-import Register from '../components/pages/Register.vue'
-import TestsList from '../components/pages/TestsList.vue'
-import Profile from "../components/pages/Profile.vue";
+import Home from '../pages/Home.vue'
+import Analytics from '../pages/Analytics.vue'
+import Auth from '../pages/Auth.vue'
+import CreateTest from '../pages/CreateTest.vue'
+import Register from '../pages/Register.vue'
+import TestsList from '../pages/TestsList.vue'
+import Profile from "../pages/Profile.vue";
 
 const routes = [
     {
