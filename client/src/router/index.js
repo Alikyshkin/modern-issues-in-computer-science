@@ -5,6 +5,7 @@ import Auth from '../components/pages/Auth.vue'
 import CreateTest from '../components/pages/CreateTest.vue'
 import Register from '../components/pages/Register.vue'
 import TestsList from '../components/pages/TestsList.vue'
+import Profile from "../components/pages/Profile.vue";
 
 const routes = [
     {
@@ -41,6 +42,11 @@ const routes = [
         path: '/tests-list',
         name: 'TestsList',
         component: TestsList
+    },
+    {
+        path: '/profile',
+        name: 'Profile',
+        component: Profile
     }
 ]
 

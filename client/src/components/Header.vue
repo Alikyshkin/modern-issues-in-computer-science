@@ -11,6 +11,7 @@
 
       <!-- Right side - Authentication -->
       <div class="flex items-center space-x-4">
+        <a href="/profile" class="px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-200">Профиль</a>
         <a href="/auth" class="px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-200">Войти</a>
         <a href="/register" class="px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-200">Регистрация</a>
         <!-- Show this button only if the user is logged in -->
