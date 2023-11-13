@@ -11,7 +11,7 @@ import java.io.Serializable;
 @Value
 public class UserDto implements Serializable {
     Long id;
-    String name;
+    String userName;
     String email;
     String password;
     Role role;
