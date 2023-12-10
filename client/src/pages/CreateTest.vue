@@ -133,21 +133,25 @@ export default {
           });
     },
     prepareTestData() {
-      // Преобразование данных теста в формат, ожидаемый сервером
-      const preparedTest = { ...this.test };
-      preparedTest.questions = preparedTest.questions.map(question => {
-        if (question.type === 'single-choice' || question.type === 'multiple-choice') {
-          return {
-            ...question,
-            options: question.options.map(option => ({
-              text: option.text,
-              isCorrect: option.isCorrect,
-            })),
-          };
-        }
-        return question;
-      });
-      return preparedTest;
+      const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+      const isuNumber = currentUser ? currentUser.isuNumber : null;
+
+      return {
+        ...this.test,
+        isuNumber: isuNumber, // Добавляем isuNumber к данным теста
+        questions: this.test.questions.map(question => {
+          if (question.type === 'single-choice' || question.type === 'multiple-choice') {
+            return {
+              ...question,
+              options: question.options.map(option => ({
+                text: option.text,
+                isCorrect: option.isCorrect,
+              })),
+            };
+          }
+          return question;
+        })
+      };
     }
   }
 };

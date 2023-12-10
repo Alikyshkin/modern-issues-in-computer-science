@@ -67,6 +67,7 @@ export default {
           .then(response => {
             this.allTests = response.data.map(test => ({
               id: test.id,
+              isuNumber: test.isuNumber,
               title: test.name,
               subject: test.subject,
               questionCount: test.questions.length,
