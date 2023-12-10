@@ -85,7 +85,6 @@ export default {
   mounted() {
     this.testId = this.$route.params.test_id; // Получение ID теста из параметров маршрута
     this.loadTest();
-    this.startTimer();
   },
   methods: {
     submitTest() {
@@ -113,7 +112,7 @@ export default {
           .catch(error => {
             console.error('Ошибка при отправке теста:', error);
           });
-    }
+    },
     loadTest() {
       axios.get(`https://example.com/api/tests/${this.testId}`)
           .then(response => {
@@ -121,8 +120,13 @@ export default {
             this.testName = data.name;
             this.testDuration = data.duration;
             this.remainingTime = data.duration * 60; // Преобразование минут в секунды
-            this.questions = data.questions;
-            // Начать таймер здесь, если необходимо
+            this.questions = data.questions.map(question => {
+              if (question.type === 'multiple-choice') {
+                question.userAnswers = []; // Инициализация для множественного выбора
+              }
+              return question;
+            });
+            this.startTimer();
           })
           .catch(error => {
             console.error('Ошибка при загрузке данных теста:', error);
@@ -131,11 +135,11 @@ export default {
     updateAnswerStatus(index) {
       const question = this.questions[index];
       if (question.type === 'short-answer') {
-        question.answered = question.answer.trim() !== '';
+        question.answered = question.userAnswer.trim() !== '';
       } else if (question.type === 'single-choice') {
-        question.answered = question.answer !== null;
+        question.answered = question.userAnswer !== null;
       } else if (question.type === 'multiple-choice') {
-        question.answered = question.answers.length > 0;
+        question.answered = question.userAnswers.length > 0;
       }
     },
     goToNextQuestion() {

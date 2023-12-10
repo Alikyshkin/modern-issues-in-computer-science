@@ -21,7 +21,7 @@
       </div>
       <!-- Список тестов -->
       <div v-for="test in filteredTests" :key="test.id" class="flex border-b p-4 cursor-pointer" @click="goToTest(test.id)">
-        <div class="flex-1 break-words mr-3">{{ test.title }}</div>
+        <div class="flex-1 break-words mr-3">{{ test.name }}</div>
         <div class="flex-1 break-words mr-3">{{ test.subject }}</div>
         <div class="flex-1 break-words mr-3">{{ test.questionCount }} вопросов</div>
         <div class="flex-1 break-words mr-3">{{ test.duration }} минут</div>
@@ -59,8 +59,14 @@ export default {
     },
   },
   methods: {
-    goToTest(testId) {
-      this.$router.push({ name: 'Test', params: { test_id: testId } });
+    goToTest(test) {
+      if (test.passed) {
+        // Если тест пройден, перенаправляем на страницу аналитики
+        this.$router.push({ name: 'Analytics', params: { id: test.id } });
+      } else {
+        // Если тест не пройден, перенаправляем на страницу прохождения теста
+        this.$router.push({ name: 'Test', params: { test_id: test.id } });
+      }
     },
     fetchTests() {
       axios.get('https://example.com/api/tests')

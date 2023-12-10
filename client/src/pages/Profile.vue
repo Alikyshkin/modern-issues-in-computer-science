@@ -1,79 +1,69 @@
 <template>
   <div class="max-w-6xl mx-auto p-4">
-    <div class="flex">
-      <div class="w-1/2 p-4">
+    <h1>Профиль пользователя</h1>
+    <p>Имя: {{ userProfile.name }}</p>
+    <p>ISU номер: {{ userProfile.isuNumber }}</p>
+    <p>Email: {{ userProfile.email }}</p>
+    <p>Тип пользователя: {{ userProfile.type }}</p>
+    <p>Пройдено тестов: {{ userProfile.testsPassed }}</p>
+    <p>Средний результат тестов: {{ userProfile.averageTestsResult }}</p>
 
-    <h1>Профиль</h1>
-    <div class="bg-white max-w-2xl shadow overflow-hidden sm:rounded-lg">
-      <div class="px-4 py-5 sm:px-6">
-        <h3 class="text-lg leading-6 font-medium text-gray-900">
-          Иван Иванович
-        </h3>
-        <p class="mt-1 max-w-2xl text-sm text-gray-500">
-          Информация о студенте/преподавателе
-        </p>
-      </div>
-      <div class="border-t border-gray-200">
-        <dl>
-          <div class="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-            <dt class="text-sm font-medium text-gray-500">
-              Полное имя
-            </dt>
-            <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
-              Иван Иванович Иванов
-            </dd>
-          </div>
-          <div class="bg-white px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-            <dt class="text-sm font-medium text-gray-500">
-              Группа
-            </dt>
-            <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
-              М34081
-            </dd>
-          </div>
-          <div class="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-            <dt class="text-sm font-medium text-gray-500">
-              Почта
-            </dt>
-            <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
-              student@example.com
-            </dd>
-          </div>
-          <div class="bg-white px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-            <dt class="text-sm font-medium text-gray-500">
-              Пройдено тестов
-            </dt>
-            <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
-              8
-            </dd>
-          </div>
-          <div class="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-            <dt class="text-sm font-medium text-gray-500">
-              Средний результат тестов
-            </dt>
-            <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
-              73.10%
-            </dd>
-          </div>
-        </dl>
-      </div>
+    <div v-for="test in userProfile.tests" :key="test.testId">
+      <h2>{{ test.testName }}</h2>
+      <AverageResultChart :averageTestResult="userProfile.averageTestsResult" />
     </div>
-  </div>
-
-    <div class="w-1/2 pl-4 pr-4 pt-32">
-
-    <DonutChart/>
-    </div>
-  </div>
   </div>
 </template>
 
 <script>
-import DonutChart from '../components/DonutChart.vue'
+import axios from 'axios';
+import AverageResultChart from '../components/AverageResultChart.vue';
+
 export default {
   components: {
-    DonutChart
+    AverageResultChart,
   },
+  data() {
+    return {
+      userProfile: {
+        name: '',
+        isuNumber: '',
+        email: '',
+        type: '',
+        testsPassed: 0,
+        averageTestsResult: 0,
+        tests: []
+      }
+    };
+  },
+  mounted() {
+    this.loadUserProfile();
+  },
+  methods: {
+    loadUserProfile() {
+      const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+      if (currentUser) {
+        this.userProfile.name = currentUser.name;
+        this.userProfile.isuNumber = currentUser.isuNumber;
+        this.userProfile.email = currentUser.email;
+        // Запрос на сервер для получения дополнительных данных
+        axios.get(`https://example.com/api/user-profile/${currentUser.isuNumber}`)
+            .then(response => {
+              const data = response.data;
+              this.userProfile.type = data.type;
+              this.userProfile.testsPassed = data.testsPassed;
+              this.userProfile.averageTestsResult = data.averageTestsResult;
+              this.userProfile.tests = data.tests;
+            })
+            .catch(error => {
+              console.error('Ошибка при получении данных профиля:', error);
+            });
+      }
+    }
+  }
 };
-
 </script>
+
+<style>
+/* Стилизация страницы профиля */
+</style>
