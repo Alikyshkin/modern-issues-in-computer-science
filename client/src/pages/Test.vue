@@ -1,110 +1,80 @@
 <template>
   <div class="max-w-6xl mx-auto p-4">
-    <h1>Название теста</h1>
+    <h1>{{ testName }}</h1>
 
     <div class="flex">
-    <!-- Список вопросов -->
-    <div class="w-1/4 p-4 border-r">
-      <div v-for="(question, index) in questions" :key="question.id" class="p-2">
-        <button :class="{'bg-green-300': question.answered, 'bg-white': !question.answered}" @click="currentQuestionIndex = index">Вопрос {{ index + 1 }}</button>
-      </div>
-    </div>
-
-    <!-- Отображение вопроса -->
-    <div class="w-3/4 p-4">
-      <h1>Вопрос №{{ currentQuestion.id }}</h1>
-
-      <h2>{{ currentQuestion.title }}</h2>
-      <p>{{ currentQuestion.content }}</p>
-
-      <!-- Отображение вариантов ответа в зависимости от типа вопроса -->
-      <div v-if="currentQuestion.type === 'short-answer'">
-        <input type="text" v-model="currentQuestion.answer" class="border p-2" @input="updateAnswerStatus(currentQuestionIndex)">
-      </div>
-      <div v-else-if="currentQuestion.type === 'single-choice'">
-        <div v-for="(option, index) in currentQuestion.options" :key="index">
-          <input type="radio" :value="option" v-model="currentQuestion.answer" @change="updateAnswerStatus(currentQuestionIndex)"> {{ option }}
-        </div>
-      </div>
-      <div v-else-if="currentQuestion.type === 'multiple-choice'">
-        <div v-for="(option, index) in currentQuestion.options" :key="index">
-          <input type="checkbox" :value="option" v-model="currentQuestion.answers" @change="updateAnswerStatus(currentQuestionIndex)"> {{ option }}
+      <!-- Список вопросов -->
+      <div class="w-1/4 p-4 border-r">
+        <div v-for="(question, index) in questions" :key="question.id" class="p-2">
+          <button
+              :class="{'bg-green-300': question.answered, 'bg-white': !question.answered}"
+              @click="currentQuestionIndex = index">
+            Вопрос {{ index + 1 }}
+          </button>
         </div>
       </div>
 
-      <!-- Кнопки навигации по вопросам -->
-      <div class="max-w-6xl mx-auto pt-14">
+      <!-- Отображение вопроса -->
+      <div class="w-3/4 p-4">
+        <h2>Вопрос №{{ currentQuestion.id }}</h2>
+        <h3>{{ currentQuestion.title }}</h3>
+        <p>{{ currentQuestion.content }}</p>
 
-      <button @click="goToPreviousQuestion" class="m-2 bg-blue-500 text-white p-2 rounded">Предыдущий вопрос</button>
-      <button @click="goToNextQuestion" class="m-2 bg-blue-500 text-white p-2 rounded">Следующий вопрос</button>
-      </div>
-      </div>
-      <div class="max-w-6xl mx-auto pt-14">
+        <!-- Отображение вариантов ответа -->
+        <div v-if="currentQuestion.type === 'short-answer'">
+          <input type="text" v-model="currentQuestion.userAnswer" class="border p-2" @input="updateAnswerStatus(currentQuestionIndex)">
+        </div>
+        <div v-else-if="currentQuestion.type === 'single-choice'">
+          <div v-for="(option, index) in currentQuestion.options" :key="index">
+            <input type="radio" :value="option.text" v-model="currentQuestion.userAnswer" @change="updateAnswerStatus(currentQuestionIndex)">
+            {{ option.text }}
+          </div>
+        </div>
+        <div v-else-if="currentQuestion.type === 'multiple-choice'">
+          <div v-for="(option, index) in currentQuestion.options" :key="index">
+            <input type="checkbox" :value="option.text" v-model="currentQuestion.userAnswers" @change="updateAnswerStatus(currentQuestionIndex)">
+            {{ option.text }}
+          </div>
+        </div>
 
+        <!-- Кнопки навигации по вопросам -->
+        <div class="max-w-6xl mx-auto pt-14">
+          <button @click="goToPreviousQuestion" class="m-2 bg-blue-500 text-white p-2 rounded">Предыдущий вопрос</button>
+          <button @click="goToNextQuestion" class="m-2 bg-blue-500 text-white p-2 rounded">Следующий вопрос</button>
+        </div>
+      </div>
+
+      <div class="max-w-6xl mx-auto pt-14">
         <!-- Кнопка завершения теста -->
-        <button class="fixed bottom-24 right-10 bg-red-400 text-white p-4 rounded">Завершить</button>
+        <button @click="submitTest" class="fixed bottom-24 right-10 bg-red-400 text-white p-4 rounded">Завершить</button>
 
         <!-- Счетчик времени -->
         <div class="fixed bottom-24 right-44 bg-gray-200 p-4 rounded">
           Оставшееся время: {{ formattedTime }}
         </div>
       </div>
-  </div>
-
+    </div>
   </div>
 </template>
 
 <script>
+import axios from 'axios';
+
 export default {
   data() {
     return {
       currentQuestionIndex: 0,
-      testDuration: 3600, // 60 минут в секундах
-      remainingTime: 3600, // Исходное время
-      questions: [
-        {
-          id: 1,
-          type: "short-answer",
-          title: "Что такое нормализация баз данных?",
-          content: "Опишите основную идею нормализации баз данных.",
-          answer: "",
-          answered: false
-        },
-        {
-          id: 2,
-          type: "single-choice",
-          title: "Какой принцип важен при публичных выступлениях?",
-          content: "Выберите один из вариантов:",
-          options: [
-            "Ясность сообщения",
-            "Громкость голоса",
-            "Длина речи",
-            "Использование слайдов"
-          ],
-          answer: null,
-          answered: false
-        },
-        {
-          id: 3,
-          type: "multiple-choice",
-          title: "Какие особенности есть у Windows Server?",
-          content: "Выберите все подходящие варианты:",
-          options: [
-            "Поддержка Active Directory",
-            "Встроенный веб-сервер",
-            "Поддержка Linux-приложений",
-            "Функционал виртуализации"
-          ],
-          answers: [],
-          answered: false
-        },
-        // Добавьте больше вопросов по аналогии
-      ]
+      testDuration: 0,
+      remainingTime: 0,
+      testName: '',
+      questions: [],
+      testId: null,
+      testResult: null
     };
   },
   computed: {
     currentQuestion() {
-      return this.questions[this.currentQuestionIndex];
+      return this.questions[this.currentQuestionIndex] || {};
     },
     formattedTime() {
       const minutes = Math.floor(this.remainingTime / 60);
@@ -113,9 +83,51 @@ export default {
     }
   },
   mounted() {
+    this.testId = this.$route.params.test_id; // Получение ID теста из параметров маршрута
+    this.loadTest();
     this.startTimer();
   },
   methods: {
+    submitTest() {
+      const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+      const isuNumber = currentUser ? currentUser.isuNumber : null;
+
+      const testDuration = (this.testDuration * 60) - this.remainingTime; // Время прохождения теста в секундах
+
+      const testSubmission = {
+        isuNumber: isuNumber,
+        testId: this.testId,
+        testName: this.testName,
+        timeTaken: testDuration,
+        questions: this.questions.map(q => ({
+          id: q.id,
+          title: q.title,
+          userAnswer: q.userAnswer || q.userAnswers || ''
+        }))
+      };
+
+      axios.post('https://example.com/api/test-results', testSubmission)
+          .then(() => {
+            this.$router.push({ name: 'Analytics', params: { id: this.testId } }); // Переход на страницу аналитики
+          })
+          .catch(error => {
+            console.error('Ошибка при отправке теста:', error);
+          });
+    }
+    loadTest() {
+      axios.get(`https://example.com/api/tests/${this.testId}`)
+          .then(response => {
+            const data = response.data;
+            this.testName = data.name;
+            this.testDuration = data.duration;
+            this.remainingTime = data.duration * 60; // Преобразование минут в секунды
+            this.questions = data.questions;
+            // Начать таймер здесь, если необходимо
+          })
+          .catch(error => {
+            console.error('Ошибка при загрузке данных теста:', error);
+          });
+    },
     updateAnswerStatus(index) {
       const question = this.questions[index];
       if (question.type === 'short-answer') {

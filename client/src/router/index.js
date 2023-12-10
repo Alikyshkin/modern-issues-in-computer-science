@@ -20,6 +20,11 @@ const routes = [
         component: Analytics
     },
     {
+        path: '/analytics/:id', // Добавляем параметр id
+        name: 'Analytics',
+        component: Analytics
+    },
+    {
         path: '/tests-list',
         name: 'TestsList',
         component: TestsList

@@ -12,13 +12,21 @@
 
 <script>
 export default {
-  data() {
-    return {
-      correctPercentage: 73.10, // Процент правильных ответов
-      wrongPercentage: 22.90, // Процент неправильных ответов
-    };
+  props: {
+    testResult: {
+      type: Object,
+      required: true
+    }
   },
   computed: {
+    correctPercentage() {
+      // Вычисление процента правильных ответов
+      return (this.testResult.correctAnswers / this.testResult.totalQuestions) * 100;
+    },
+    wrongPercentage() {
+      // Вычисление процента неправильных ответов
+      return (this.testResult.wrongAnswers / this.testResult.totalQuestions) * 100;
+    },
     circumference() {
       return 2 * Math.PI * 70; // Длина окружности
     },
