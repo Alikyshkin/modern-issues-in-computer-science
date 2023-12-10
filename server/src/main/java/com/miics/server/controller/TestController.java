@@ -6,6 +6,7 @@ import com.miics.server.dao.dto.UserDto;
 import com.miics.server.dao.models.Question;
 import com.miics.server.dao.models.Test;
 import com.miics.server.service.TestTakingService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -18,6 +19,7 @@ public class TestController {
 
     private final TestTakingService testService;
 
+    @Autowired
     public TestController(TestTakingService testService) {
         this.testService = testService;
     }

@@ -10,8 +10,12 @@ import java.util.List;
 @Service
 public class AnalyticsService {
 
+    private final IResultRepository resultRepository;
+
     @Autowired
-    private IResultRepository resultRepository;
+    public AnalyticsService(IResultRepository resultRepository) {
+        this.resultRepository = resultRepository;
+    }
 
     public List<Result> getResultsForTest(Long testId) {
         return resultRepository.findAllById(testId);

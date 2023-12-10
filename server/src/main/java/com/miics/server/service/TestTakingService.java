@@ -11,11 +11,15 @@ import org.springframework.stereotype.Service;
 @Service
 public class TestTakingService {
 
-    @Autowired
-    private ITestRepository testRepository;
+    private final ITestRepository testRepository;
+
+    private final IResultRepository resultRepository;
 
     @Autowired
-    private IResultRepository resultRepository;
+    public TestTakingService(ITestRepository testRepository, IResultRepository resultRepository) {
+        this.testRepository = testRepository;
+        this.resultRepository = resultRepository;
+    }
 
     public Test startTest(Long testId) {
         return testRepository.findById(testId).orElseThrow(() -> new RuntimeException("Test not found"));

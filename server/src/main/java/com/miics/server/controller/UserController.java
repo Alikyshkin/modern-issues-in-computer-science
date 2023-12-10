@@ -15,6 +15,7 @@ import java.util.List;
 public class UserController {
     private final UserService userService;
 
+    @Autowired
     public UserController(UserService userService) {
         this.userService = userService;
     }
@@ -37,8 +38,9 @@ public class UserController {
 
     @GetMapping("")
     @PreAuthorize("hasAuthority('access:read')")
-    public List<ResponseEntity<UserDto>> showUsers() {
-        return ResponseEntity.of(userService.getUsers());
+    public ResponseEntity<List<UserDto>> showUsers() {
+        List<UserDto> users = userService.getUsers();
+        return ResponseEntity.ok(users);
     }
 
     @PostMapping("/add")
