@@ -13,13 +13,12 @@ import jakarta.persistence.*;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name = "Questions")
-public class Question {
+@Table(name = "Question")
+public abstract class Question {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private String question;
-    private String type;
-    @ManyToOne
-    private Test test;
+    protected String title;
+    protected String content;
+    protected QuestionType answerType;
 }

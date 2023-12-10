@@ -21,6 +21,7 @@ public class UserController {
     }
 
     @PostMapping("/register")
+    //@PreAuthorize("hasAuthority('access:write')")
     public ResponseEntity<UserDto> register(@RequestBody UserDto userDto) {
         return ResponseEntity.ok(userService.register(userDto));
     }
@@ -31,32 +32,32 @@ public class UserController {
     }
 
     @GetMapping("/{userId}")
-    @PreAuthorize("hasAuthority('access:read')")
+    //@PreAuthorize("hasAuthority('access:read')")
     public ResponseEntity<UserDto> showUser(@PathVariable("userId") Long userId) {
         return ResponseEntity.ok(userService.getUserById(userId));
     }
 
     @GetMapping("")
-    @PreAuthorize("hasAuthority('access:read')")
+    //@PreAuthorize("hasAuthority('access:read')")
     public ResponseEntity<List<UserDto>> showUsers() {
         List<UserDto> users = userService.getUsers();
         return ResponseEntity.ok(users);
     }
 
     @PostMapping("/add")
-    @PreAuthorize("hasAuthority('access:write')")
+    //@PreAuthorize("hasAuthority('access:write')")
     public ResponseEntity<UserDto> addUser(@RequestBody UserDto userDto) {
         return ResponseEntity.ok(userService.addUser(userDto));
     }
 
     @DeleteMapping("/delete")
-    @PreAuthorize("hasAuthority('access:write')")
+    //@PreAuthorize("hasAuthority('access:write')")
     public ResponseEntity<UserDto> deleteUser(@RequestBody UserDto userDto) {
         return ResponseEntity.ok(userService.deleteUser(userDto));
     }
 
     @DeleteMapping("/delete/{userId}")
-    @PreAuthorize("hasAuthority('access:write')")
+    //@PreAuthorize("hasAuthority('access:write')")
     public ResponseEntity<UserDto> deleteUserById(@PathVariable("userId") Long userId) {
         return ResponseEntity.ok(userService.deleteUserById(userId));
     }

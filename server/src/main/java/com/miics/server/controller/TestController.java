@@ -6,6 +6,7 @@ import com.miics.server.dao.dto.UserDto;
 import com.miics.server.dao.models.Question;
 import com.miics.server.dao.models.Test;
 import com.miics.server.service.TestTakingService;
+//import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -24,37 +25,41 @@ public class TestController {
         this.testService = testService;
     }
 
-    @PostMapping("/create")
+    @PostMapping("/createTestAndQuestions")
+    //@ApiOperation(value = "создание теста", response = TestDto.class)
     public ResponseEntity<TestDto> createTest(@RequestBody TestDto testDto) {
-        return ResponseEntity.ok(testService.createTest(test));
+        return ResponseEntity.ok(testService.createTestAndQuestions(testDto));
     }
 
-    @PostMapping("/{testId}/questions")
-    public ResponseEntity<QuestionDto> addQuestion(@PathVariable Long testId, @RequestBody QuestionDto questionDto) {
-        return ResponseEntity.ok(testService.addQuestion(testId, questionDto));
-    }
+
 
     @GetMapping("/{testId}")
-    @PreAuthorize("hasAuthority('access:read')")
+    //@ApiOperation(value = "получение теста", response = TestDto.class)
+    //@PreAuthorize("hasAuthority('access:read')")
     public ResponseEntity<TestDto> showTest(@PathVariable("testId") Long testId) {
         return ResponseEntity.ok(testService.getTestById(testId));
     }
 
-    @GetMapping("")
-    @PreAuthorize("hasAuthority('access:read')")
-    public List<ResponseEntity<TestDto>> showTests() {
-        return ResponseEntity.of(testService.getTests());
-    }
+//    @PostMapping("/{testId}/questions")
+//    public ResponseEntity<QuestionDto> addQuestion(@PathVariable Long testId, @RequestBody QuestionDto questionDto) {
+//        return ResponseEntity.ok(testService.addQuestion(testId, questionDto));
+//    }
 
-    @DeleteMapping("/delete")
-    @PreAuthorize("hasAuthority('access:write')")
-    public ResponseEntity<TestDto> deleteTest(@RequestBody TestDto testDto) {
-        return ResponseEntity.ok(testService.deleteTest(testDto));
-    }
-
-    @DeleteMapping("/delete/{testId}")
-    @PreAuthorize("hasAuthority('access:write')")
-    public ResponseEntity<UserDto> deleteTestById(@PathVariable("testId") Long testId) {
-        return ResponseEntity.ok(testService.deleteTestById(testId));
-    }
+//    @GetMapping("")
+//    @PreAuthorize("hasAuthority('access:read')")
+//    public List<ResponseEntity<TestDto>> showTests() {
+//        return ResponseEntity.of(testService.getTests());
+//    }
+//
+//    @DeleteMapping("/delete")
+//    @PreAuthorize("hasAuthority('access:write')")
+//    public ResponseEntity<TestDto> deleteTest(@RequestBody TestDto testDto) {
+//        return ResponseEntity.ok(testService.deleteTest(testDto));
+//    }
+//
+//    @DeleteMapping("/delete/{testId}")
+//    @PreAuthorize("hasAuthority('access:write')")
+//    public ResponseEntity<UserDto> deleteTestById(@PathVariable("testId") Long testId) {
+//        return ResponseEntity.ok(testService.deleteTestById(testId));
+//    }
 }
