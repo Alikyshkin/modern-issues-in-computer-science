@@ -60,8 +60,11 @@ export default {
   },
   methods: {
     goToTest(test) {
-      if (test.passed) {
-        // Если тест пройден, перенаправляем на страницу аналитики
+      const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+      const isAdminOrTeacher = currentUser && (currentUser.role === 'admin' || currentUser.role === 'teacher');
+
+      if (isAdminOrTeacher || test.passed) {
+        // Если пользователь - админ/учитель или тест пройден, перенаправляем на страницу аналитики
         this.$router.push({ name: 'Analytics', params: { id: test.id } });
       } else {
         // Если тест не пройден, перенаправляем на страницу прохождения теста
