@@ -1,136 +1,87 @@
-//package com.miics.server.service;
-//
-//import org.springframework.beans.factory.annotation.Autowired;
-//import org.springframework.context.annotation.Bean;
-//import org.springframework.context.annotation.Configuration;
-//import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
-//import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
-//import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
-//import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
-//import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-//import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-//import org.springframework.security.config.annotation.web.configurers.AbstractAuthenticationFilterConfigurer;
-//import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
-//import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-//import org.springframework.security.crypto.password.PasswordEncoder;
-//import org.springframework.security.web.SecurityFilterChain;
-//import org.springframework.security.web.context.AbstractSecurityWebApplicationInitializer;
-//import org.springframework.web.servlet.config.annotation.EnableWebMvc;
-//import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
-//import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
-//
-////@Configuration
-////@EnableWebSecurity
-////public class SecurityConfig {
-//
-////@Configuration
-////@EnableWebSecurity
-////@EnableMethodSecurity
-////public class SecurityConfig {
-////
-////    private final UserService userService;
-////
-////    @Autowired
-////    public SecurityConfig(UserService userService) {
-////        this.userService = userService;
-////    }
-////
-////    @Bean
-////    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-////        return http.csrf(AbstractHttpConfigurer::disable)
-////                .authorizeHttpRequests(auth -> auth
-////                        .requestMatchers("api/v1/apps/welcome", "api/v1/apps/new-user").permitAll()
-////                        .requestMatchers("api/v1/apps/**").authenticated())
-////                .formLogin(AbstractAuthenticationFilterConfigurer::permitAll)
-////                .build();
-////    }
-////
-////    @Bean
-////    public DaoAuthenticationProvider daoAuthenticationProvider() {
-////        DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
-////        provider.setUserDetailsService(userService);
-////        provider.setPasswordEncoder(passwordEncoder());
-////        return provider;
-////    }
-////
-////    @Bean
-////    public PasswordEncoder passwordEncoder() {
-////        return new BCryptPasswordEncoder();
-////    }
-////}
-//
-//@Configuration
-//@EnableWebSecurity
-//public class SecurityConfig extends AbstractSecurityWebApplicationInitializer {
-//
-//    private final UserService usersService;
+package com.miics.server.service;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractAuthenticationFilterConfigurer;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.context.AbstractSecurityWebApplicationInitializer;
+import springfox.documentation.builders.PathSelectors;
+import springfox.documentation.builders.RequestHandlerSelectors;
+import springfox.documentation.spi.DocumentationType;
+import springfox.documentation.spring.data.rest.configuration.SpringDataRestConfiguration;
+import springfox.documentation.spring.web.plugins.Docket;
+import springfox.documentation.swagger2.annotations.EnableSwagger2;
+
+@ComponentScan
+@Configuration
+@EnableWebSecurity
+@EnableSwagger2
+@Import(SpringDataRestConfiguration.class)
+public class SecurityConfig extends AbstractSecurityWebApplicationInitializer {
+
+//    private final UserService userService;
 //
 //    @Autowired
-//    public SecurityConfig(UserService usersService) {
-//        this.usersService = usersService;
+//    public SecurityConfig(UserService userService) {
+//        this.userService = userService;
 //    }
-//
-//    @Override
-//    protected void configure(HttpSecurity http) throws Exception {
-//
-//        http
-//                .httpBasic()
-//                .and()
-//                .authorizeRequests()
-//                .antMatchers("/").permitAll()
-//                .and()
-//                .csrf().disable()
-//                .formLogin().disable();
-//    }
-//
-//    @Override
-//    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-//        auth.authenticationProvider(daoAuthenticationProvider());
-//    }
-//
+
+    @Bean
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+        return http.csrf(AbstractHttpConfigurer::disable)
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("http://localhost:8080/users/v1", "http://localhost:8080/swagger-ui/ ").permitAll()
+                        .requestMatchers("http://localhost:8080/**").authenticated())
+                .formLogin(AbstractAuthenticationFilterConfigurer::permitAll)
+                .build();
+    }
+
 //    @Bean
 //    public DaoAuthenticationProvider daoAuthenticationProvider() {
 //        DaoAuthenticationProvider daoAuthenticationProvider = new DaoAuthenticationProvider();
-//        daoAuthenticationProvider.setUserDetailsService(usersService);
-//        daoAuthenticationProvider.setPasswordEncoder(passwordEncoder());
+//        daoAuthenticationProvider.setUserDetailsService(userService);
+////        daoAuthenticationProvider.setPasswordEncoder(passwordEncoder());
 //        return daoAuthenticationProvider;
 //    }
-//
+
+    @Bean
+    public Docket api() {
+        return new Docket(DocumentationType.SWAGGER_2)
+                .select()
+                .apis(RequestHandlerSelectors.any())
+                .paths(PathSelectors.any())
+                .build();
+    }
+
 //    @Bean
 //    public PasswordEncoder passwordEncoder() {
 //        return new BCryptPasswordEncoder();
 //    }
-//}
-
-//    @Configuration
-//    @EnableWebMvc
-//    public class AppConfig implements WebMvcConfigurer {
 //
-//        private final UserService userService;
-//
-//        @Autowired
-//        public AppConfig(UserService userService) {
-//            this.userService = userService;
-//        }
-//
-//        @Override
-//        public void addInterceptors(InterceptorRegistry registry) {
-//            registry.addInterceptor(new LoginUrlAuthenticationInterceptor());
-//        }
-//
-//        @Bean
-//        public DaoAuthenticationProvider daoAuthenticationProvider() {
-//            DAOAuthenticationProvider provider = new DAOAuthenticationProvider();
-//            provider.setUserDetailsService(userDetailsService());
-//            return provider;
-//        }
-//
-//        @Bean
-//        public UserDetailsService userDetailsService() {
-//            InMemoryUserDetailsManager manager = new InMemoryUserDetailsManager();
-//            manager.loadUsers(Arrays.asList(
-//                    new UserDetails(usersService.getUserById(1).getUsername(), usersService.getUserById(1).getPassword(), true, true, true,
-//                            true, getAuthorities()),
-//
-//        }
+//    @Bean
+//    public IUserMapper userMapper() {
+//        return Mappers.getMapper(IUserMapper.class);
 //    }
+//
+//    @Bean
+//    public IQuestionMapper questionMapper() {
+//        return Mappers.getMapper(IQuestionMapper.class);
+//    }
+//
+//    @Bean
+//    public IResultMapper resultMapper() {
+//        return Mappers.getMapper(IResultMapper.class);
+//    }
+//
+//    @Bean
+//    public ITestMapper testMapper() {
+//        return Mappers.getMapper(ITestMapper.class);
+//    }
+}

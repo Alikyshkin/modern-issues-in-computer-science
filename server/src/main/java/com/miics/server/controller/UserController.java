@@ -1,15 +1,17 @@
 package com.miics.server.controller;
 
 import com.miics.server.dao.dto.UserDto;
-import com.miics.server.dao.models.User;
-import com.miics.server.service.UserService;
+import com.miics.server.service.implementation.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
+//import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@ComponentScan(basePackages = "com.miics.server")
+@ComponentScan("com.miics.server.dao.mappers")
 @RestController
 @RequestMapping("/users")
 public class UserController {
@@ -35,6 +37,12 @@ public class UserController {
     //@PreAuthorize("hasAuthority('access:read')")
     public ResponseEntity<UserDto> showUser(@PathVariable("userId") Long userId) {
         return ResponseEntity.ok(userService.getUserById(userId));
+    }
+
+    @GetMapping("/v1")
+    //@PreAuthorize("hasAuthority('access:read')")
+    public String test() {
+        return "ResponseEntity.ok(userService.getUserById(userId))";
     }
 
     @GetMapping("")

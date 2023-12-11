@@ -1,4 +1,4 @@
-package com.miics.server.service;
+package com.miics.server.service.implementation;
 
 import com.miics.server.dao.dto.TestDto;
 import com.miics.server.dao.mappers.ITestMapper;

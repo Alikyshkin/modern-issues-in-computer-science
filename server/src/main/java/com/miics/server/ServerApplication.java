@@ -13,19 +13,6 @@ import org.springframework.context.annotation.Configuration;
 @SpringBootApplication
 @ComponentScan(basePackages = "com.miics.server.dao.mappers")
 public class ServerApplication {
-//    @Configuration
-//    @EnableSwagger2
-//    public class SwaggerConfig {
-//        @Bean
-//        public Docket api() {
-//            return new Docket(DocumentationType.SWAGGER_2)
-//                    .select()
-//                    .apis(RequestHandlerSelectors.basePackage("server/src/main/java/com/miics/server/controller"))
-//                    .build();
-//        }
-//    }
-
-
     public static void main(String[] args) {
         SpringApplication.run(ServerApplication.class, args);
     }
