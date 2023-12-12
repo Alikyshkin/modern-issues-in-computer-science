@@ -2,46 +2,45 @@ package com.miics.server.service;
 
 import com.miics.server.dao.dto.UserDto;
 import com.miics.server.dao.mappers.IUserMapper;
-import com.miics.server.dao.models.Role;
 import com.miics.server.dao.models.User;
 import com.miics.server.dao.repositories.IUserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.stereotype.Service;
 
-import java.util.Collections;
 import java.util.List;
 
 @Service
-public class UserService implements UserDetailsService {
+@ComponentScan(basePackages = {"com.miics.server.dao.mappers"})
+public class UserService /*implements UserDetailsService*/{
 
-    @Autowired
-    private IUserRepository userRepository;
+    private final IUserMapper userMapper;
 
-    @Autowired
-    private PasswordEncoder passwordEncoder;
+    private final IUserRepository userRepository;
 
-    @Autowired
-    private IUserMapper userMapper;
+    public UserService(IUserMapper userMapper, @Qualifier("UserRepositoryBean") IUserRepository userRepository) {
+        this.userMapper = userMapper;
+        this.userRepository = userRepository;
+    }
+
+//    @Autowired
+//    private PasswordEncoder passwordEncoder;
 
     public UserDto register(UserDto userDto) {
         User user = userMapper.unDto(userDto);
-        user.setPassword(passwordEncoder.encode(userDto.getPassword()));
+//        user.setPassword(passwordEncoder.encode(userDto.getPassword()));
         userRepository.save(user);
         return userMapper.toDto(user);
     }
 
-    public UserDto login(UserDto userDto) {
-        User user = userRepository.findByUserName(userDto.getUserName());
-        if (user != null && passwordEncoder.matches(userDto.getPassword(), user.getPassword())) {
-            return userMapper.toDto(user);
-        }
-        throw new RuntimeException("Invalid username or password");
-    }
+//    public UserDto login(UserDto userDto) {
+//        User user = userRepository.findByUserName(userDto.getUserName());
+////        if (user != null && passwordEncoder.matches(userDto.getPassword(), user.getPassword())) {
+////            return userMapper.toDto(user);
+////        }
+//        throw new RuntimeException("Invalid username or password");
+//    }
 
     public UserDto getUserById(Long userId) {
         User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found"));
@@ -55,7 +54,7 @@ public class UserService implements UserDetailsService {
 
     public UserDto addUser(UserDto userDto) {
         User user = userMapper.unDto(userDto);
-        user.setPassword(passwordEncoder.encode(userDto.getPassword()));
+//        user.setPassword(passwordEncoder.encode(userDto.getPassword()));
         userRepository.save(user);
         return userMapper.toDto(user);
     }
@@ -75,8 +74,8 @@ public class UserService implements UserDetailsService {
         return userMapper.toDto(user);
     }
 
-    @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        return null;
-    }
 }
+//    @Override
+//    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+//        return null;
+//    }

@@ -6,7 +6,7 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
-@Repository("ResultRepository")
+@Repository("ResultRepositoryBean")
 public interface IResultRepository extends JpaRepository<Result, Long> {
     List<Result> findAllById (Long testId);
 }

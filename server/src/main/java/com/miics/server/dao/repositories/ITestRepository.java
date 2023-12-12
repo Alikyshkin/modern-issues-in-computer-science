@@ -4,6 +4,6 @@ import com.miics.server.dao.models.Test;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-@Repository("TestRepository")
+@Repository("TestRepositoryBean")
 public interface ITestRepository extends JpaRepository<Test, Long> {
 }
