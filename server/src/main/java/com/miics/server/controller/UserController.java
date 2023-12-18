@@ -27,10 +27,10 @@ public class UserController {
         return ResponseEntity.ok(userService.register(userDto));
     }
 
-    @PostMapping("/login")
-    public ResponseEntity<UserDto> login(@RequestBody UserDto userDto) {
-        return ResponseEntity.ok(userService.login(userDto));
-    }
+//    @PostMapping("/login")
+//    public ResponseEntity<UserDto> login(@RequestBody UserDto userDto) {
+//        return ResponseEntity.ok(userService.login(userDto));
+//    }
 
     @GetMapping("/{userId}")
     //@PreAuthorize("hasAuthority('access:read')")
