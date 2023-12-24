@@ -1,10 +1,13 @@
 package com.miics.server.controller;
 
 import com.miics.server.dao.dto.TestDto;
+import com.miics.server.dao.dto.UserTestResultsDto;
 import com.miics.server.service.TestTakingService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/tests")
@@ -32,26 +35,15 @@ public class TestController {
         return ResponseEntity.ok(testService.getTestById(testId));
     }
 
-//    @PostMapping("/{testId}/questions")
-//    public ResponseEntity<QuestionDto> addQuestion(@PathVariable Long testId, @RequestBody QuestionDto questionDto) {
-//        return ResponseEntity.ok(testService.addQuestion(testId, questionDto));
-//    }
-//
-//    @GetMapping("")
-//    @PreAuthorize("hasAuthority('access:read')")
-//    public List<ResponseEntity<TestDto>> showTests() {
-//        return ResponseEntity.of(testService.getTests());
-//    }
-//
-//    @DeleteMapping("/delete")
-//    @PreAuthorize("hasAuthority('access:write')")
-//    public ResponseEntity<TestDto> deleteTest(@RequestBody TestDto testDto) {
-//        return ResponseEntity.ok(testService.deleteTest(testDto));
-//    }
-//
-//    @DeleteMapping("/delete/{testId}")
-//    @PreAuthorize("hasAuthority('access:write')")
-//    public ResponseEntity<UserDto> deleteTestById(@PathVariable("testId") Long testId) {
-//        return ResponseEntity.ok(testService.deleteTestById(testId));
-//    }
+    @PostMapping("/sendResults")
+    public ResponseEntity<UserTestResultsDto> sendResults(@RequestBody UserTestResultsDto userTestResultsDto){
+        return ResponseEntity.ok(testService.calculateResults(userTestResultsDto));
+    }
+
+    @GetMapping("/getAllTests")
+    //@ApiOperation(value = "получение теста", response = TestDto.class)
+    //@PreAuthorize("hasAuthority('access:read')")
+    public ResponseEntity<List<TestDto>> getAllTests() {
+        return ResponseEntity.ok(testService.getAllTests());
+    }
 }

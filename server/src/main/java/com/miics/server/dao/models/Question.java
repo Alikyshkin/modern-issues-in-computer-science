@@ -8,17 +8,26 @@ import lombok.Setter;
 
 import jakarta.persistence.*;
 
+import java.util.List;
+
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
 @Table(name = "Question")
-public abstract class Question {
+public class Question {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     protected String title;
     protected String content;
-    protected QuestionType answerType;
+    protected String type;
+    @ManyToOne
+    protected Test test;
+    @ElementCollection
+    protected List<String> answers;
+    @ElementCollection
+    protected List<Boolean> isCorrect;
+
 }
