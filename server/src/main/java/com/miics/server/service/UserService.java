@@ -4,6 +4,7 @@ import com.miics.server.dao.dto.*;
 import com.miics.server.dao.mappers.IUserAnswerMapper;
 import com.miics.server.dao.mappers.IUserMapper;
 import com.miics.server.dao.mappers.IResultMapper;
+import com.miics.server.dao.models.Role;
 import com.miics.server.dao.models.User;
 import com.miics.server.dao.repositories.IUserAnswerRepository;
 import com.miics.server.dao.repositories.IUserRepository;
@@ -12,6 +13,7 @@ import com.miics.server.service.configuration.JwtUtilities;
 import com.miics.server.service.configuration.UserSecurity;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.ComponentScan;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -21,6 +23,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.Collections;
 import java.util.List;
 
 @Service
@@ -49,31 +52,13 @@ public class UserService /*implements UserDetailsService*/{
         this.jwtUtilities = jwtUtilities;
     }
 
-    public UserDto register(UserDto userDto) {
+    public ResponseEntity<?> register(UserDto userDto) {
         User user = userMapper.toEntity(userDto);
         user.setPassword(passwordEncoder.encode(userDto.getPassword()));
         userRepository.save(user);
-        return userMapper.toDto(user);
+        String token = jwtUtilities.generateToken(userDto.getEmail(), userDto.getRole().grantedAuthorities());
+        return new ResponseEntity<>(new BearerToken(token , "Bearer "), HttpStatus.OK);
     }
-
-//    public ResponseEntity<?> register(UserDto userDto) {
-//        if(iUserRepository.existsByEmail(userDto.getEmail()))
-//        { return  new ResponseEntity<>("email is already taken !", HttpStatus.SEE_OTHER); }
-//        else
-//        { User user = new User();
-//            user.setEmail(registerDto.getEmail());
-//            user.setFirstName(registerDto.getFirstName());
-//            user.setLastName(registerDto.getLastName());
-//            user.setPassword(passwordEncoder.encode(userDto.getPassword()));
-//            //By Default , he/she is a simple user
-//            Role role = iRoleRepository.findByRoleName(RoleName.USER);
-//            user.setRoles(Collections.singletonList(role));
-//            iUserRepository.save(user);
-//            String token = jwtUtilities.generateToken(registerDto.getEmail(),Collections.singletonList(role.getRoleName()));
-//            return new ResponseEntity<>(new BearerToken(token , "Bearer "),HttpStatus.OK);
-//
-//        }
-//    }
 
     public String login(UserDto userDto) {
         Authentication authentication = authenticationManager.authenticate(
@@ -83,10 +68,9 @@ public class UserService /*implements UserDetailsService*/{
                 )
         );
         SecurityContextHolder.getContext().setAuthentication(authentication);
-        User user = userRepository.findByEmail(userDto.getUserName());
+        User user = userRepository.findByEmail(userDto.getEmail());
         UserSecurity userSecurity = new UserSecurity(user.getEmail(), user.getPassword(), user.getRole().grantedAuthorities());
-        String token = jwtUtilities.generateToken(userSecurity.getUserEmail(), userSecurity.getAuthorities());
-        return token;
+        return jwtUtilities.generateToken(userSecurity.getUserEmail(), userSecurity.getAuthorities());
     }
 
     public UserDto getUserById(Long userId) {

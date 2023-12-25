@@ -26,9 +26,8 @@ public class UserController {
     }
 
     @PostMapping("/register")
-//    @PreAuthorize("hasAuthority('access:write')")
-    public ResponseEntity<UserDto> register(@RequestBody UserDto userDto) {
-        return ResponseEntity.ok(userService.register(userDto));
+    public ResponseEntity<?> register(@RequestBody UserDto userDto) {
+        return userService.register(userDto);
     }
 
     @PostMapping("/login")
@@ -37,13 +36,13 @@ public class UserController {
     }
 
     @GetMapping("/{userId}")
-    @PreAuthorize("hasRole('TEACHER')")
+//    @PreAuthorize("hasAuthority('access:write')")
     public ResponseEntity<UserDto> showUser(@PathVariable("userId") Long userId) {
         return ResponseEntity.ok(userService.getUserById(userId));
     }
 
     @GetMapping("")
-    @PreAuthorize("hasRole('TEACHER')")
+//    @PreAuthorize("hasRole('1')")
     public ResponseEntity<List<UserDto>> showUsers() {
         List<UserDto> users = userService.getUsers();
         return ResponseEntity.ok(users);
