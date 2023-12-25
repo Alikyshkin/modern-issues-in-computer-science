@@ -95,7 +95,7 @@ public class UserService /*implements UserDetailsService*/{
         List<ResultDto> resultDtos = resultsMapper.toDtos(resultsRepository.findAllByIsuNumber(id));
 
         for (ResultDto resultDto : resultDtos) {
-            List<UserAnswerDto> userAnswerDtos = userAnswerMapper.toDtos(userAnswerRepository.getUserAnswersByResultIsuNumber(resultDto.getIsuNumber()));
+            List<UserAnswerDto> userAnswerDtos = userAnswerMapper.toDtos(userAnswerRepository.getUserAnswersByResult_Id(resultDto.getId()));
             resultDto.setUserAnswerDtos(userAnswerDtos);
         }
 
@@ -126,7 +126,7 @@ public class UserService /*implements UserDetailsService*/{
         List<ResultDto> resultDtos = resultsMapper.toDtos(resultsRepository.findAllByTestId(testId));
 
         for (ResultDto resultDto : resultDtos) {
-            List<UserAnswerDto> userAnswerDtos = userAnswerMapper.toDtos(userAnswerRepository.getUserAnswersByResultIsuNumber(resultDto.getIsuNumber()));
+            List<UserAnswerDto> userAnswerDtos = userAnswerMapper.toDtos(userAnswerRepository.getUserAnswersByResult_Id(resultDto.getId()));
             resultDto.setUserAnswerDtos(userAnswerDtos);
         }
 

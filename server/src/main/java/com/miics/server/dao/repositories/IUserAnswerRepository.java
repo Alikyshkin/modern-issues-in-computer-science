@@ -10,4 +10,5 @@ import java.util.List;
 @Repository("UserAnswerRepositoryBean")
 public interface IUserAnswerRepository extends JpaRepository<UserAnswer, Long> {
     List<UserAnswer> getUserAnswersByResultIsuNumber(Long id);
+    List<UserAnswer> getUserAnswersByResult_Id(Long id);
 }

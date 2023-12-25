@@ -7,11 +7,15 @@ import com.miics.server.dao.dto.ResultDto;
 import com.miics.server.dao.mappers.IQuestionMapper;
 import com.miics.server.dao.mappers.ITestMapper;
 import com.miics.server.dao.mappers.IResultMapper;
+import com.miics.server.dao.mappers.IUserAnswerMapper;
 import com.miics.server.dao.models.Question;
+import com.miics.server.dao.models.Result;
 import com.miics.server.dao.models.Test;
+import com.miics.server.dao.models.UserAnswer;
 import com.miics.server.dao.repositories.IQuestionRepository;
 import com.miics.server.dao.repositories.ITestRepository;
 import com.miics.server.dao.repositories.IResultRepository;
+import com.miics.server.dao.repositories.IUserAnswerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -34,14 +38,21 @@ public class TestTakingService {
 
     private final IQuestionMapper questionMapper;
 
+    private final IUserAnswerMapper userAnswerMapper;
+    private final IUserAnswerRepository userAnswerRepository;
+
     @Autowired
-    public TestTakingService(ITestRepository testRepository, IResultRepository resultRepository, ITestMapper testMapper, IQuestionRepository questionRepository, IQuestionMapper questionMapper, IResultMapper resultsMapper) {
+    public TestTakingService(ITestRepository testRepository, IResultRepository resultRepository, ITestMapper testMapper,
+                             IQuestionRepository questionRepository, IQuestionMapper questionMapper,
+                             IResultMapper resultsMapper, IUserAnswerMapper userAnswerMapper, IUserAnswerRepository userAnswerRepository) {
         this.testRepository = testRepository;
         this.resultRepository = resultRepository;
         this.testMapper = testMapper;
         this.questionRepository = questionRepository;
         this.questionMapper = questionMapper;
         this.resultsMapper = resultsMapper;
+        this.userAnswerMapper = userAnswerMapper;
+        this.userAnswerRepository = userAnswerRepository;
     }
 
 //    public void submitTest(Long testId, User student, int score) {
@@ -88,8 +99,8 @@ public class TestTakingService {
             Boolean isAnswerCorrect = true;
             Optional<Question> question = questionRepository.findById(userAnswerDto.getId());
             if (question.isPresent()){
-                for(String userAnswer : userAnswerDto.getUserAnswers()){
-                    int index = question.get().getAnswers().indexOf(userAnswer);
+                for(String answer : userAnswerDto.getUserAnswers()){
+                    int index = question.get().getAnswers().indexOf(answer);
                     if(index == -1) isAnswerCorrect = false;
                     else{
                         Boolean isCorrect = question.get().getIsCorrect().get(index);
@@ -111,7 +122,15 @@ public class TestTakingService {
         resultDto.setCorrectAnswers(correctAnswers);
         resultDto.setWrongAnswers(userAnswerDtos.size() - correctAnswers);
         resultDto.setUserAnswerDtos(userAnswerDtos);
-        resultRepository.save(resultsMapper.toEntity(resultDto));
+        Result result = resultRepository.save(resultsMapper.toEntity(resultDto));
+
+        for(UserAnswerDto userAnswerDto : userAnswerDtos){
+            for(String answer : userAnswerDto.getUserAnswers()){
+                UserAnswer userAnswer = userAnswerMapper.toEntity(userAnswerDto);
+                userAnswer.setResult(result);
+                userAnswerRepository.save(userAnswer);
+            }
+        }
         return resultDto;
     }
 
