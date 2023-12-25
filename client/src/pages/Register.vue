@@ -104,7 +104,7 @@ export default {
     changeTab(tab) {
       this.activeTab = tab;
       if (tab === 'student') {
-        this.user.role = 'USER';
+        this.user.role = 'STUDENT';
       } else if (tab === 'teacher') {
         this.user.role = 'TEACHER';
       }
