@@ -33,8 +33,8 @@ public interface IQuestionMapper {
         return questionDtos;
     }
 
-    Question unDto(QuestionDto questionDto);
+    Question toEntity(QuestionDto questionDto);
 
 
-    List<Question> unDtos(List<QuestionDto> questionDtos);
+    List<Question> toEntities(List<QuestionDto> questionDtos);
 }

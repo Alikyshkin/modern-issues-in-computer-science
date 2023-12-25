@@ -1,6 +1,9 @@
 package com.miics.server.controller;
 
+import com.miics.server.dao.dto.ResultDto;
+import com.miics.server.dao.dto.TeacherResultDto;
 import com.miics.server.dao.dto.UserDto;
+import com.miics.server.dao.dto.UserResultDto;
 import com.miics.server.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -45,10 +48,19 @@ public class UserController {
         return ResponseEntity.ok(users);
     }
 
-    @PostMapping("/add")
-    //@PreAuthorize("hasAuthority('access:write')")
-    public ResponseEntity<UserDto> addUser(@RequestBody UserDto userDto) {
-        return ResponseEntity.ok(userService.addUser(userDto));
+    @GetMapping("/{userId}/page")
+    public ResponseEntity<UserResultDto> getUserResults(@PathVariable("userId") Long userId) {
+        return ResponseEntity.ok(userService.getUserPage(userId));
+    }
+
+    @GetMapping("/{userId}/results/{testId}")
+    public ResponseEntity<ResultDto> getTestResultForUser(@PathVariable("userId") Long userId, @PathVariable("testId") Long testId) {
+        return ResponseEntity.ok(userService.getTestResultForUserByTestIdAndUserId(testId, userId));
+    }
+
+    @GetMapping("/results/{testId}")
+    public ResponseEntity<TeacherResultDto> getTestResultsForTeacher(@PathVariable("testId") Long testId) {
+        return ResponseEntity.ok(userService.getTestResultsForTeacherById(testId));
     }
 
     @DeleteMapping("/delete")

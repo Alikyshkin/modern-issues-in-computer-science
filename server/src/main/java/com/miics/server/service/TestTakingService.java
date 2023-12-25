@@ -3,15 +3,15 @@ package com.miics.server.service;
 import com.miics.server.dao.dto.QuestionDto;
 import com.miics.server.dao.dto.TestDto;
 import com.miics.server.dao.dto.UserAnswerDto;
-import com.miics.server.dao.dto.UserTestResultsDto;
+import com.miics.server.dao.dto.ResultDto;
 import com.miics.server.dao.mappers.IQuestionMapper;
 import com.miics.server.dao.mappers.ITestMapper;
+import com.miics.server.dao.mappers.IResultMapper;
 import com.miics.server.dao.models.Question;
 import com.miics.server.dao.models.Test;
-import com.miics.server.dao.models.UserAnswer;
 import com.miics.server.dao.repositories.IQuestionRepository;
-import com.miics.server.dao.repositories.IResultRepository;
 import com.miics.server.dao.repositories.ITestRepository;
+import com.miics.server.dao.repositories.IResultRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -28,17 +28,20 @@ public class TestTakingService {
 
     private final IQuestionRepository questionRepository;
 
+    private final IResultMapper resultsMapper;
+
     private final ITestMapper testMapper;
 
     private final IQuestionMapper questionMapper;
 
     @Autowired
-    public TestTakingService(ITestRepository testRepository, IResultRepository resultRepository, ITestMapper testMapper, IQuestionRepository questionRepository, IQuestionMapper questionMapper) {
+    public TestTakingService(ITestRepository testRepository, IResultRepository resultRepository, ITestMapper testMapper, IQuestionRepository questionRepository, IQuestionMapper questionMapper, IResultMapper resultsMapper) {
         this.testRepository = testRepository;
         this.resultRepository = resultRepository;
         this.testMapper = testMapper;
         this.questionRepository = questionRepository;
         this.questionMapper = questionMapper;
+        this.resultsMapper = resultsMapper;
     }
 
 //    public void submitTest(Long testId, User student, int score) {
@@ -51,10 +54,10 @@ public class TestTakingService {
 //    }
 
     public TestDto createTestAndQuestions(TestDto testDto) {
-        Test test = testMapper.unDto(testDto);
+        Test test = testMapper.toEntity(testDto);
         Test result = testRepository.save(test);
         for (QuestionDto item : testDto.getQuestions()) {
-            Question question = questionMapper.unDto(item);
+            Question question = questionMapper.toEntity(item);
             question.setTest(result);
             questionRepository.save(question);
         }
@@ -75,10 +78,10 @@ public class TestTakingService {
         }else throw new NullPointerException("Теста не существует");
     }
 
-    public UserTestResultsDto calculateResults(UserTestResultsDto userTestResultsDto) {
-        List<UserAnswerDto> userAnswerDtos = userTestResultsDto.getUserAnswerDtos();
+    public ResultDto calculateResults(ResultDto resultDto) {
+        List<UserAnswerDto> userAnswerDtos = resultDto.getUserAnswerDtos();
 
-        userTestResultsDto.setTotalQuestions(userAnswerDtos.size());
+        resultDto.setTotalQuestions(userAnswerDtos.size());
 
         int correctAnswers = 0;
         for(UserAnswerDto userAnswerDto : userAnswerDtos){
@@ -105,10 +108,11 @@ public class TestTakingService {
             }else userAnswerDto.setPassed(false);
         }
 
-        userTestResultsDto.setCorrectAnswers(correctAnswers);
-        userTestResultsDto.setWrongAnswers(userAnswerDtos.size() - correctAnswers);
-        userTestResultsDto.setUserAnswerDtos(userAnswerDtos);
-        return userTestResultsDto;
+        resultDto.setCorrectAnswers(correctAnswers);
+        resultDto.setWrongAnswers(userAnswerDtos.size() - correctAnswers);
+        resultDto.setUserAnswerDtos(userAnswerDtos);
+        resultRepository.save(resultsMapper.toEntity(resultDto));
+        return resultDto;
     }
 
     public List<TestDto> getAllTests() {

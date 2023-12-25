@@ -15,8 +15,8 @@ public interface IUserMapper {
 
     List<UserDto> toDtos(List<User> users);
 
-    User unDto(UserDto userDTO);
+    User toEntity(UserDto userDTO);
 
-    List<User> unDtos(List<UserDto> userDTOs);
+    List<User> toEntities(List<UserDto> userDTOs);
 
 }

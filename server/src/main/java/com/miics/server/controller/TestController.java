@@ -1,7 +1,7 @@
 package com.miics.server.controller;
 
 import com.miics.server.dao.dto.TestDto;
-import com.miics.server.dao.dto.UserTestResultsDto;
+import com.miics.server.dao.dto.ResultDto;
 import com.miics.server.service.TestTakingService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -36,8 +36,8 @@ public class TestController {
     }
 
     @PostMapping("/sendResults")
-    public ResponseEntity<UserTestResultsDto> sendResults(@RequestBody UserTestResultsDto userTestResultsDto){
-        return ResponseEntity.ok(testService.calculateResults(userTestResultsDto));
+    public ResponseEntity<ResultDto> sendResults(@RequestBody ResultDto resultDto){
+        return ResponseEntity.ok(testService.calculateResults(resultDto));
     }
 
     @GetMapping("/getAllTests")

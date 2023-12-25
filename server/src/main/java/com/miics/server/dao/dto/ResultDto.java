@@ -1,18 +1,18 @@
 package com.miics.server.dao.dto;
 
-import com.miics.server.dao.models.Test;
-import com.miics.server.dao.models.User;
-import lombok.Value;
+import lombok.Data;
 
-import java.io.Serializable;
+import java.util.List;
 
-/**
- * DTO for {@link com.miics.server.dao.models.Result}
- */
-@Value
-public class ResultDto implements Serializable {
+@Data
+public class ResultDto {
     Long id;
-    int score;
-    User user;
-    Test test;
+    Long isuNumber;
+    Long testId;
+    String testTitle;
+    int timeTaken;
+    int correctAnswers;
+    int wrongAnswers;
+    int totalQuestions;
+    List<UserAnswerDto> userAnswerDtos;
 }

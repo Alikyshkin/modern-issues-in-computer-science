@@ -10,7 +10,7 @@ import java.io.Serializable;
  */
 @Value
 public class UserDto implements Serializable {
-    Long id;
+    Long isuNumber;
     String userName;
     String email;
     String password;

@@ -1,26 +1,30 @@
 package com.miics.server.dao.models;
 
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import jakarta.persistence.*;
+import java.util.List;
 
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name = "Results")
+@Table(name = "results")
 public class Result {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-    private int score;
-    @ManyToOne
-    private User user;
-    @ManyToOne
-    private Test test;
+    @GeneratedValue
+    Long id;
+    Long isuNumber;
+    Long testId;
+    String testTitle;
+    int timeTaken;
+    int correctAnswers;
+    int wrongAnswers;
+    int totalQuestions;
+    @OneToMany
+    List<UserAnswer> userAnswer;
 }
