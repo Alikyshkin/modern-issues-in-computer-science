@@ -8,6 +8,7 @@ import com.miics.server.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 //import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -30,19 +31,19 @@ public class UserController {
         return ResponseEntity.ok(userService.register(userDto));
     }
 
-//    @PostMapping("/login")
-//    public ResponseEntity<UserDto> login(@RequestBody UserDto userDto) {
-//        return ResponseEntity.ok(userService.login(userDto));
-//    }
+    @PostMapping("/login")
+    public ResponseEntity<String> login(@RequestBody UserDto userDto) {
+        return ResponseEntity.ok(userService.login(userDto));
+    }
 
     @GetMapping("/{userId}")
-    //@PreAuthorize("hasAuthority('access:read')")
+    @PreAuthorize("hasRole('TEACHER')")
     public ResponseEntity<UserDto> showUser(@PathVariable("userId") Long userId) {
         return ResponseEntity.ok(userService.getUserById(userId));
     }
 
     @GetMapping("")
-    //@PreAuthorize("hasAuthority('access:read')")
+    @PreAuthorize("hasRole('TEACHER')")
     public ResponseEntity<List<UserDto>> showUsers() {
         List<UserDto> users = userService.getUsers();
         return ResponseEntity.ok(users);
