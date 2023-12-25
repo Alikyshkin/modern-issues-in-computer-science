@@ -21,21 +21,22 @@
         <p>{{ currentQuestion.content }}</p>
 
         <!-- Отображение вариантов ответа -->
-        <div v-if="currentQuestion.type === 'short-answer'">
-          <input type="text" v-model="currentQuestion.userAnswer" class="border p-2" @input="updateAnswerStatus(currentQuestionIndex)">
-        </div>
-        <div v-else-if="currentQuestion.type === 'single-choice'">
+<!--        <div v-if="currentQuestion.type === 'short-answer'">-->
+<!--          <input type="text" v-model="currentQuestion.userAnswer" class="border p-2" @input="updateAnswerStatus(currentQuestionIndex)">-->
+<!--        </div>-->
+<!--        <div v-else-if="currentQuestion.type === 'single-choice'">-->
+          <div>
           <div v-for="(option, index) in currentQuestion.options" :key="index">
             <input type="radio" :value="option.text" v-model="currentQuestion.userAnswer" @change="updateAnswerStatus(currentQuestionIndex)">
             {{ option.text }}
           </div>
         </div>
-        <div v-else-if="currentQuestion.type === 'multiple-choice'">
-          <div v-for="(option, index) in currentQuestion.options" :key="index">
-            <input type="checkbox" :value="option.text" v-model="currentQuestion.userAnswers" @change="updateAnswerStatus(currentQuestionIndex)">
-            {{ option.text }}
-          </div>
-        </div>
+<!--        <div v-else-if="currentQuestion.type === 'multiple-choice'">-->
+<!--          <div v-for="(option, index) in currentQuestion.options" :key="index">-->
+<!--            <input type="checkbox" :value="option.text" v-model="currentQuestion.userAnswers" @change="updateAnswerStatus(currentQuestionIndex)">-->
+<!--            {{ option.text }}-->
+<!--          </div>-->
+<!--        </div>-->
 
         <!-- Кнопки навигации по вопросам -->
         <div class="max-w-6xl mx-auto pt-14">
@@ -94,18 +95,17 @@ export default {
       const testDuration = (this.testDuration * 60) - this.remainingTime; // Время прохождения теста в секундах
 
       const testSubmission = {
-        isuNumber: isuNumber,
+        isuNumber: 308517,
         testId: this.testId,
-        testName: this.testName,
-        timeTaken: testDuration,
+        testTitle: this.testName,
         questions: this.questions.map(q => ({
           id: q.id,
           title: q.title,
           userAnswer: q.userAnswer || q.userAnswers || ''
         }))
       };
-
-      axios.post('https://example.com/api/test-results', testSubmission)
+console.log(testSubmission);
+      axios.post('http://localhost:8080/tests/sendResults', testSubmission)
           .then(() => {
             this.$router.push({ name: 'Analytics', params: { id: this.testId } }); // Переход на страницу аналитики
           })
@@ -114,18 +114,22 @@ export default {
           });
     },
     loadTest() {
-      axios.get(`https://example.com/api/tests/${this.testId}`)
+      axios.get(`http://localhost:8080/tests/${this.testId}`)
           .then(response => {
             const data = response.data;
             this.testName = data.name;
             this.testDuration = data.duration;
             this.remainingTime = data.duration * 60; // Преобразование минут в секунды
-            this.questions = data.questions.map(question => {
-              if (question.type === 'multiple-choice') {
-                question.userAnswers = []; // Инициализация для множественного выбора
-              }
-              return question;
-            });
+            this.questions = data.questions.map(question => ({
+              id: question.id,
+              title: question.title,
+              content: question.content,
+              type: question.type,
+              options: question.answers.map(answer => ({ text: answer })),
+              userAnswer: null,
+              userAnswers: [],
+              answered: false
+            }));
             this.startTimer();
           })
           .catch(error => {

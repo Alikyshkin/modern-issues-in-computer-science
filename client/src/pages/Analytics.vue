@@ -1,6 +1,6 @@
 <template>
   <div class="max-w-6xl mx-auto p-4">
-    <h1>Результаты теста: {{ testInfo.testName }}</h1>
+    <h1>Результаты теста: {{ testInfo.testTitle }}</h1>
 
     <!-- Отображение для администратора/учителя -->
     <div v-if="isAdminOrTeacher">
@@ -19,7 +19,7 @@
     </div>
 
     <!-- Отображение для студента -->
-    <div v-else>
+    <div>
       <p v-if="testResult">ID теста: {{ testResult.testId }}</p>
       <p v-if="testResult">ISU номер: {{ testResult.isuNumber }}</p>
       <p v-if="testResult">Количество правильных ответов: {{ testResult.correctAnswers }} из {{ testResult.totalQuestions }}</p>
@@ -83,7 +83,7 @@ export default {
           });
     },
     loadTestResults(testId) {
-      axios.get(`https://example.com/api/test-results/${testId}`)
+      axios.get(`http://localhost:8080/users/results/${testId}`)
           .then(response => {
             this.testResult = response.data;
           })

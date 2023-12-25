@@ -20,7 +20,7 @@
         <div class="flex-1">Продолжительность</div>
       </div>
       <!-- Список тестов -->
-      <div v-for="test in filteredTests" :key="test.id" class="flex border-b p-4 cursor-pointer" @click="goToTest(test.id)">
+      <div v-for="test in filteredTests" :key="test.id" class="flex border-b p-4 cursor-pointer" @click="goToTest(test)">
         <div class="flex-1 break-words mr-3">{{ test.name }}</div>
         <div class="flex-1 break-words mr-3">{{ test.subject }}</div>
         <div class="flex-1 break-words mr-3">{{ test.questionCount }} вопросов</div>
@@ -60,28 +60,19 @@ export default {
   },
   methods: {
     goToTest(test) {
-      const currentUser = JSON.parse(localStorage.getItem('currentUser'));
-      const isAdminOrTeacher = currentUser && (currentUser.role === 'admin' || currentUser.role === 'teacher');
-
-      if (isAdminOrTeacher || test.passed) {
-        // Если пользователь - админ/учитель или тест пройден, перенаправляем на страницу аналитики
-        this.$router.push({ name: 'Analytics', params: { id: test.id } });
-      } else {
-        // Если тест не пройден, перенаправляем на страницу прохождения теста
-        this.$router.push({ name: 'Test', params: { test_id: test.id } });
-      }
+      this.$router.push({ name: 'Test', params: { test_id: test.id } });
     },
     fetchTests() {
-      axios.get('https://example.com/api/tests')
+      axios.get('http://localhost:8080/tests/getAllTests')
           .then(response => {
             this.allTests = response.data.map(test => ({
               id: test.id,
-              isuNumber: test.isuNumber,
-              title: test.name,
+              name: test.name,
+              description: test.description,
               subject: test.subject,
               questionCount: test.questions.length,
               duration: test.duration,
-              passed: test.passed
+              // passed: test.questions.every(question => question.isCorrect.includes(true))
             }));
             this.updateTestLists();
           })

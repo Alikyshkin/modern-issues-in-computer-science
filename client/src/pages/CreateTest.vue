@@ -110,7 +110,7 @@ export default {
       this.test.questions[qIndex].options.splice(oIndex, 1);
     },
     submitTest() {
-      fetch('https://example.com/api/tests', { // Замените URL на фактический URL вашего API
+      fetch('http://localhost:8080/tests/createTestAndQuestions', { // Замените URL на фактический URL вашего API
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -133,20 +133,15 @@ export default {
           });
     },
     prepareTestData() {
-      const currentUser = JSON.parse(localStorage.getItem('currentUser'));
-      const isuNumber = currentUser ? currentUser.isuNumber : null;
-
+      // ...
       return {
         ...this.test,
-        isuNumber: isuNumber, // Добавляем isuNumber к данным теста
         questions: this.test.questions.map(question => {
           if (question.type === 'single-choice' || question.type === 'multiple-choice') {
             return {
               ...question,
-              options: question.options.map(option => ({
-                text: option.text,
-                isCorrect: option.isCorrect,
-              })),
+              answers: question.options.map(option => option.text),
+              isCorrect: question.options.map(option => option.isCorrect),
             };
           }
           return question;

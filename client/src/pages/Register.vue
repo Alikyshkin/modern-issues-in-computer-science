@@ -23,9 +23,9 @@
       <h2 class="text-lg font-bold mb-4">{{ formTitle }}</h2>
       <div class="mb-4 relative">
         <label class="block text-gray-700 text-sm font-bold mb-2" for="name">Имя</label>
-        <input v-model="user.name" class="form-input shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="name" type="text" placeholder="Имя" required>
-        <i v-if="user.name" :class="{'fas fa-check text-green-500': validateName, 'fas fa-times text-red-500': !validateName}" class="absolute right-3 top-3"></i>
-        <p v-if="!validateName && user.name" class="text-red-500 text-xs italic">Минимум 3 символа.</p>
+        <input v-model="user.userName" class="form-input shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="name" type="text" placeholder="Имя" required>
+        <i v-if="user.userName" :class="{'fas fa-check text-green-500': validateName, 'fas fa-times text-red-500': !validateName}" class="absolute right-3 top-3"></i>
+        <p v-if="!validateName && user.userName" class="text-red-500 text-xs italic">Минимум 3 символа.</p>
       </div>
       <div class="mb-4 relative">
         <label class="block text-gray-700 text-sm font-bold mb-2" for="isu-number">Номер ИСУ</label>
@@ -47,10 +47,11 @@
       </div>
       <div class="flex items-center justify-between">
         <button
-            :class="{'opacity-50 cursor-not-allowed': !isFormValid, 'hover:bg-blue-700': isFormValid}"
-            :disabled="!isFormValid"
             class="bg-blue-500 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
-            type="submit">
+            type="submit"
+            @click="submitForm">
+          <!-- Добавленный атрибут @click -->
+
           Регистрация
         </button>
       </div>
@@ -65,11 +66,11 @@ export default {
     return {
       activeTab: 'student',
       user: {
-        name: '',
-        isuNumber: '',
+        userName: '',
+        // isuNumber: '',
         email: '',
         password: '',
-        type: '', // Добавляем поле для указания роли пользователя
+        role: '', // Добавляем поле для указания роли пользователя
       },
     };
   },
@@ -78,7 +79,7 @@ export default {
       return `Зарегистрироваться как ${this.activeTab === 'student' ? 'студент' : 'преподаватель'}`;
     },
     validateName() {
-      return this.user.name.length >= 3;
+      return this.user.userName.length >= 3;
     },
     validateIsuNumber() {
       return !isNaN(this.user.isuNumber);
@@ -95,32 +96,36 @@ export default {
           this.validateIsuNumber &&
           this.validateEmail &&
           this.validatePassword &&
-          this.user.type !== ''
+          this.user.role !== ''
       );
     },
   },
   methods: {
     changeTab(tab) {
       this.activeTab = tab;
+      if (tab === 'student') {
+        this.user.role = 'USER';
+      } else if (tab === 'teacher') {
+        this.user.role = 'TEACHER';
+      }
+      console.log(this.user.role);
     },
     submitForm() {
-      if (this.isFormValid) {
-        fetch('/api/register/', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(this.user),
-        })
-            .then(response => response.json())
-            .then(data => {
-              console.log(data);
-            })
-            .catch(error => {
-              console.error('Ошибка при отправке формы:', error);
-            });
-      }
-    },
+      fetch('http://localhost:8080/users/register', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(this.user),
+      })
+          .then(response => response.json())
+          .then(data => {
+            console.log(data);
+          })
+          .catch(error => {
+            console.error('Ошибка при отправке формы:', error);
+          });
+    }
   },
 };
 </script>
