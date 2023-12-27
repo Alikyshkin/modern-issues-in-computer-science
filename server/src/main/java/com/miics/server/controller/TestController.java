@@ -5,6 +5,7 @@ import com.miics.server.dao.dto.ResultDto;
 import com.miics.server.service.TestTakingService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -21,6 +22,7 @@ public class TestController {
     }
 
     @PostMapping("/createTestAndQuestions")
+    @PreAuthorize("hasAuthority('access:write')")
     //@ApiOperation(value = "создание теста", response = TestDto.class)
     public ResponseEntity<TestDto> createTest(@RequestBody TestDto testDto) {
         return ResponseEntity.ok(testService.createTestAndQuestions(testDto));
@@ -30,12 +32,13 @@ public class TestController {
 
     @GetMapping("/{testId}")
     //@ApiOperation(value = "получение теста", response = TestDto.class)
-    //@PreAuthorize("hasAuthority('access:read')")
+    @PreAuthorize("hasAuthority('access:write')")
     public ResponseEntity<TestDto> showTest(@PathVariable("testId") Long testId) {
         return ResponseEntity.ok(testService.getTestById(testId));
     }
 
     @PostMapping("/sendResults")
+    @PreAuthorize("hasAuthority('access:read')")
     public ResponseEntity<ResultDto> sendResults(@RequestBody ResultDto resultDto){
         return ResponseEntity.ok(testService.calculateResults(resultDto));
     }

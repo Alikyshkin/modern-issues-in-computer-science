@@ -26,51 +26,53 @@ public class UserController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<?> register(@RequestBody UserDto userDto) {
-        return userService.register(userDto);
+    public ResponseEntity<String> register(@RequestBody UserDto userDto) {
+        return ResponseEntity.ok(userService.register(userDto));
     }
 
-    @PostMapping("/login")
-    public ResponseEntity<String> login(@RequestBody UserDto userDto) {
-        return ResponseEntity.ok(userService.login(userDto));
-    }
+//    @PostMapping("/login")
+//    public ResponseEntity<?> login(@RequestBody UserDto userDto) {
+//    }
 
     @GetMapping("/{userId}")
-//    @PreAuthorize("hasAuthority('access:write')")
+    @PreAuthorize("hasAuthority('access:read')")
     public ResponseEntity<UserDto> showUser(@PathVariable("userId") Long userId) {
         return ResponseEntity.ok(userService.getUserById(userId));
     }
 
     @GetMapping("")
-//    @PreAuthorize("hasRole('1')")
+    @PreAuthorize("hasAuthority('access:write')")
     public ResponseEntity<List<UserDto>> showUsers() {
         List<UserDto> users = userService.getUsers();
         return ResponseEntity.ok(users);
     }
 
     @GetMapping("/{userId}/page")
+    @PreAuthorize("hasAuthority('access:read')")
     public ResponseEntity<UserResultDto> getUserResults(@PathVariable("userId") Long userId) {
         return ResponseEntity.ok(userService.getUserPage(userId));
     }
 
     @GetMapping("/{userId}/results/{testId}")
+    @PreAuthorize("hasAuthority('access:read')")
     public ResponseEntity<ResultDto> getTestResultForUser(@PathVariable("userId") Long userId, @PathVariable("testId") Long testId) {
         return ResponseEntity.ok(userService.getTestResultForUserByTestIdAndUserId(testId, userId));
     }
 
     @GetMapping("/results/{testId}")
+    @PreAuthorize("hasAuthority('access:write')")
     public ResponseEntity<TeacherResultDto> getTestResultsForTeacher(@PathVariable("testId") Long testId) {
         return ResponseEntity.ok(userService.getTestResultsForTeacherById(testId));
     }
 
     @DeleteMapping("/delete")
-    //@PreAuthorize("hasAuthority('access:write')")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<UserDto> deleteUser(@RequestBody UserDto userDto) {
         return ResponseEntity.ok(userService.deleteUser(userDto));
     }
 
     @DeleteMapping("/delete/{userId}")
-    //@PreAuthorize("hasAuthority('access:write')")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<UserDto> deleteUserById(@PathVariable("userId") Long userId) {
         return ResponseEntity.ok(userService.deleteUserById(userId));
     }

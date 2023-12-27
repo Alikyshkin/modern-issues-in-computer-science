@@ -25,9 +25,6 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @EnableMethodSecurity
 public class SpringSecurityConfig {
 
-
-    @Autowired
-    private final JwtAuthenticationFilter jwtAuthenticationFilter ;
     @Autowired
     private final CustomerUserDetailsService customerUserDetailsService ;
 
@@ -35,20 +32,23 @@ public class SpringSecurityConfig {
     @Bean
     public SecurityFilterChain filterChain (HttpSecurity http) throws Exception
     { http
+            .httpBasic()
+            .and()
             .csrf().disable()
             .cors().disable()
-            .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-            .and()
             .authorizeHttpRequests()
             .requestMatchers("/**").permitAll();
-        http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
         return  http.build();
     }
 
     @Bean
-    public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception
-    { return authenticationConfiguration.getAuthenticationManager();}
+    public AuthenticationManager authManager(HttpSecurity http) throws Exception {
+        return http.getSharedObject(AuthenticationManagerBuilder.class)
+                .userDetailsService(customerUserDetailsService)
+                .and()
+                .build();
+    }
 
     @Bean
     protected DaoAuthenticationProvider daoAuthenticationProvider() {

@@ -1,15 +1,13 @@
 package com.miics.server.service;
 
 import com.miics.server.dao.dto.*;
+import com.miics.server.dao.mappers.IResultMapper;
 import com.miics.server.dao.mappers.IUserAnswerMapper;
 import com.miics.server.dao.mappers.IUserMapper;
-import com.miics.server.dao.mappers.IResultMapper;
-import com.miics.server.dao.models.Role;
 import com.miics.server.dao.models.User;
+import com.miics.server.dao.repositories.IResultRepository;
 import com.miics.server.dao.repositories.IUserAnswerRepository;
 import com.miics.server.dao.repositories.IUserRepository;
-import com.miics.server.dao.repositories.IResultRepository;
-import com.miics.server.service.configuration.JwtUtilities;
 import com.miics.server.service.configuration.UserSecurity;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.ComponentScan;
@@ -18,17 +16,18 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.Collections;
 import java.util.List;
 
 @Service
 @ComponentScan(basePackages = {"com.miics.server.dao.mappers"})
-public class UserService /*implements UserDetailsService*/{
+public class UserService implements UserDetailsService {
 
     private final AuthenticationManager authenticationManager ;
     private final IUserMapper userMapper;
@@ -38,9 +37,8 @@ public class UserService /*implements UserDetailsService*/{
     private final IResultMapper resultsMapper;
     private final IUserAnswerMapper userAnswerMapper;
     private final PasswordEncoder passwordEncoder ;
-    private final JwtUtilities jwtUtilities ;
 
-    public UserService(IUserMapper userMapper, @Qualifier("UserRepositoryBean") IUserRepository userRepository, IResultRepository resultsRepository, IResultMapper resultsMapper, IUserAnswerRepository userAnswerRepository, IUserAnswerMapper userAnswerMapper, AuthenticationManager authenticationManager, PasswordEncoder passwordEncoder, JwtUtilities jwtUtilities) {
+    public UserService(IUserMapper userMapper, @Qualifier("UserRepositoryBean") IUserRepository userRepository, IResultRepository resultsRepository, IResultMapper resultsMapper, IUserAnswerRepository userAnswerRepository, IUserAnswerMapper userAnswerMapper, AuthenticationManager authenticationManager, PasswordEncoder passwordEncoder) {
         this.userMapper = userMapper;
         this.userRepository = userRepository;
         this.resultsMapper = resultsMapper;
@@ -49,29 +47,27 @@ public class UserService /*implements UserDetailsService*/{
         this.userAnswerMapper = userAnswerMapper;
         this.authenticationManager = authenticationManager;
         this.passwordEncoder = passwordEncoder;
-        this.jwtUtilities = jwtUtilities;
     }
 
-    public ResponseEntity<?> register(UserDto userDto) {
+    public String register(UserDto userDto) {
         User user = userMapper.toEntity(userDto);
         user.setPassword(passwordEncoder.encode(userDto.getPassword()));
         userRepository.save(user);
-        String token = jwtUtilities.generateToken(userDto.getEmail(), userDto.getRole().grantedAuthorities());
-        return new ResponseEntity<>(new BearerToken(token , "Bearer "), HttpStatus.OK);
+        return "Cool";
     }
 
-    public String login(UserDto userDto) {
-        Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(
-                        userDto.getEmail(),
-                        userDto.getPassword()
-                )
-        );
-        SecurityContextHolder.getContext().setAuthentication(authentication);
-        User user = userRepository.findByEmail(userDto.getEmail());
-        UserSecurity userSecurity = new UserSecurity(user.getEmail(), user.getPassword(), user.getRole().grantedAuthorities());
-        return jwtUtilities.generateToken(userSecurity.getUserEmail(), userSecurity.getAuthorities());
-    }
+//    public String login(UserDto userDto) {
+//        Authentication authentication = authenticationManager.authenticate(
+//                new UsernamePasswordAuthenticationToken(
+//                        userDto.getEmail(),
+//                        userDto.getPassword()
+//                )
+//        );
+//        SecurityContextHolder.getContext().setAuthentication(authentication);
+//        User user = userRepository.findByEmail(userDto.getEmail());
+//        UserSecurity userSecurity = new UserSecurity(user.getEmail(), user.getPassword(), user.getRole().grantedAuthorities());
+//        return
+//    }
 
     public UserDto getUserById(Long userId) {
         User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found"));
@@ -159,5 +155,11 @@ public class UserService /*implements UserDetailsService*/{
         teacherResultDto.setUsersPassed((long) resultDtos.size());
 
         return teacherResultDto;
+    }
+
+    @Override
+    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+        User user = userRepository.findByEmail(email);
+        return  UserSecurity.fromUser(user) ;
     }
 }
