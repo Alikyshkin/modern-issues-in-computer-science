@@ -32,22 +32,29 @@ public class SpringSecurityConfig {
     @Bean
     public SecurityFilterChain filterChain (HttpSecurity http) throws Exception
     { http
-            .httpBasic()
-            .and()
             .csrf().disable()
             .cors().disable()
             .authorizeHttpRequests()
-            .requestMatchers("/**").permitAll();
-
+            .anyRequest().authenticated()
+            .and()
+            .formLogin()
+//            .loginPage("/login")
+            .permitAll()
+            .and()
+            .logout()
+            .logoutSuccessUrl("/login")
+//            .logoutUrl("/logout")
+            .invalidateHttpSession(true)
+            .deleteCookies("JSESSIONID");
         return  http.build();
     }
 
     @Bean
     public AuthenticationManager authManager(HttpSecurity http) throws Exception {
-        return http.getSharedObject(AuthenticationManagerBuilder.class)
-                .userDetailsService(customerUserDetailsService)
-                .and()
-                .build();
+        AuthenticationManagerBuilder authenticationManagerBuilder =
+                http.getSharedObject(AuthenticationManagerBuilder.class);
+        authenticationManagerBuilder.userDetailsService(customerUserDetailsService);
+        return authenticationManagerBuilder.build();
     }
 
     @Bean

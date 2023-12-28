@@ -9,18 +9,18 @@ import com.miics.server.dao.repositories.IResultRepository;
 import com.miics.server.dao.repositories.IUserAnswerRepository;
 import com.miics.server.dao.repositories.IUserRepository;
 import com.miics.server.service.configuration.UserSecurity;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.ComponentScan;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -54,6 +54,34 @@ public class UserService implements UserDetailsService {
         user.setPassword(passwordEncoder.encode(userDto.getPassword()));
         userRepository.save(user);
         return "Cool";
+    }
+
+    public String login(UserDto userDto){
+        // Здесь вы должны получить данные из запроса, проверить их и, если все хорошо, вернуть токен авторизации
+        // Например:
+        String username = userDto.getEmail();
+        String password = userDto.getPassword();
+        // Проверяем данные пользователя
+        // Если все хорошо, возвращаем токен авторизации
+        String token = "your_token";
+        return  token;
+    }
+
+    public String logout(HttpServletRequest request, HttpServletResponse response){
+        // Здесь вы должны выполнить выход пользователя из системы
+        // Например:
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth != null){
+            new SecurityContextLogoutHandler().logout(request, response, auth);
+        }
+        return "Successful";
+    }
+
+    public boolean checkToken(String token) {
+        // Здесь вы должны проверить валидность токена
+        // Например:
+        boolean isValid = "your_token".equals(token);
+        return isValid;
     }
 
 //    public String login(UserDto userDto) {

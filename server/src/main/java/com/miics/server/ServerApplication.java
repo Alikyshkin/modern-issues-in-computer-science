@@ -8,6 +8,7 @@ import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 //@EnableJpaRepositories(basePackages = {"com.miics.server.repositories"})
 //@EnableAutoConfiguration
 //@EntityScan(basePackages = {"com.miics.server.models"})
+
 @EnableWebMvc
 @SpringBootApplication
 public class ServerApplication {

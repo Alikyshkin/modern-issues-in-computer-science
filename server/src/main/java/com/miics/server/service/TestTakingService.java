@@ -55,15 +55,6 @@ public class TestTakingService {
         this.userAnswerRepository = userAnswerRepository;
     }
 
-//    public void submitTest(Long testId, User student, int score) {
-//        Test test = testRepository.findById(testId).orElseThrow(() -> new RuntimeException("Test not found"));
-//        Result result = new Result();
-//        result.setTest(test);
-//        result.setUser(student);
-//        result.setScore(score);
-//        resultRepository.save(result);
-//    }
-
     public TestDto createTestAndQuestions(TestDto testDto) {
         Test test = testMapper.toEntity(testDto);
         Test result = testRepository.save(test);
