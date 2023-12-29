@@ -27,12 +27,12 @@
         <i v-if="user.userName" :class="{'fas fa-check text-green-500': validateName, 'fas fa-times text-red-500': !validateName}" class="absolute right-3 top-3"></i>
         <p v-if="!validateName && user.userName" class="text-red-500 text-xs italic">Минимум 3 символа.</p>
       </div>
-      <div class="mb-4 relative">
-        <label class="block text-gray-700 text-sm font-bold mb-2" for="isu-number">Номер ИСУ</label>
-        <input v-model="user.isuNumber" class="form-input shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="isu-number" type="number" placeholder="Номер ИСУ" required>
-        <i v-if="user.isuNumber" :class="{'fas fa-check text-green-500': validateIsuNumber, 'fas fa-times text-red-500': !validateIsuNumber}" class="absolute right-3 top-3"></i>
-        <p v-if="!validateIsuNumber && user.isuNumber" class="text-red-500 text-xs italic">Должен быть числом и содержать минимум 3 символа.</p>
-      </div>
+<!--      <div class="mb-4 relative">-->
+<!--        <label class="block text-gray-700 text-sm font-bold mb-2" for="isu-number">Номер ИСУ</label>-->
+<!--        <input v-model="user.isuNumber" class="form-input shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="isu-number" type="number" placeholder="Номер ИСУ" required>-->
+<!--        <i v-if="user.isuNumber" :class="{'fas fa-check text-green-500': validateIsuNumber, 'fas fa-times text-red-500': !validateIsuNumber}" class="absolute right-3 top-3"></i>-->
+<!--        <p v-if="!validateIsuNumber && user.isuNumber" class="text-red-500 text-xs italic">Должен быть числом и содержать минимум 3 символа.</p>-->
+<!--      </div>-->
       <div class="mb-4 relative">
         <label class="block text-gray-700 text-sm font-bold mb-2" for="email">Электронная почта</label>
         <input v-model="user.email" class="form-input shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="email" type="email" placeholder="email@example.com" required>
@@ -125,6 +125,7 @@ export default {
           .catch(error => {
             console.error('Ошибка при отправке формы:', error);
           });
+      this.$router.push('/auth');
     }
   },
 };

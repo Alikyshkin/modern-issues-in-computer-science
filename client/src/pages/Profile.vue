@@ -7,6 +7,8 @@
     <p>Тип пользователя: {{ userProfile.type }}</p>
     <p>Пройдено тестов: {{ userProfile.testsPassed }}</p>
     <p>Средний результат тестов: {{ userProfile.averageTestsResult }}</p>
+    <AverageResultChart :averageTestResult="userProfile.averageTestsResult" />
+    <DonutChart :averageTestResult="userProfile.averageTestsResult" />
 
     <div v-for="test in userProfile.tests" :key="test.testId">
       <h2>{{ test.testName }}</h2>
@@ -18,10 +20,12 @@
 <script>
 import axios from 'axios';
 import AverageResultChart from '../components/AverageResultChart.vue';
+import DonutChart from '../components/DonutChart.vue';
 
 export default {
   components: {
     AverageResultChart,
+    DonutChart,
   },
   data() {
     return {
@@ -43,17 +47,22 @@ export default {
     loadUserProfile() {
       const currentUser = JSON.parse(localStorage.getItem('currentUser'));
       if (currentUser) {
-        this.userProfile.name = currentUser.name;
+        this.userProfile.name = currentUser.userName;
         this.userProfile.isuNumber = currentUser.isuNumber;
         this.userProfile.email = currentUser.email;
+        if (currentUser.role == 'STUDENT') {
+          this.userProfile.type = 'Студент';
+        } else if (currentUser.role == 'TEACHER') {
+          this.userProfile.type = 'Преподаватель';
+        }
+
         // Запрос на сервер для получения дополнительных данных
-        axios.get(`https://example.com/api/user-profile/${currentUser.isuNumber}`)
+        axios.get(`http://localhost:8080/users/${currentUser.id}/page`)
             .then(response => {
               const data = response.data;
-              this.userProfile.type = data.type;
               this.userProfile.testsPassed = data.testsPassed;
               this.userProfile.averageTestsResult = data.averageTestsResult;
-              this.userProfile.tests = data.tests;
+              // this.userProfile.tests = data.tests;
             })
             .catch(error => {
               console.error('Ошибка при получении данных профиля:', error);

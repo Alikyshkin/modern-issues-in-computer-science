@@ -67,6 +67,9 @@
     <button @click="addQuestion" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded w-full">
       Добавить вопрос
     </button>
+    <div v-if="isTestSubmitted" class="alert alert-success">
+      Тест успешно отправлен.
+    </div>
     <button @click="submitTest" class="bg-black hover:bg-gray-800 text-white font-bold py-2 px-4 rounded w-full mt-4">
       Создать тест
     </button>
@@ -78,6 +81,7 @@ export default {
   name: 'CreateTest',
   data() {
     return {
+      isTestSubmitted: false,
       test: {
         name: '',
         duration: '',
@@ -110,6 +114,7 @@ export default {
       this.test.questions[qIndex].options.splice(oIndex, 1);
     },
     submitTest() {
+      console.log(JSON.stringify(this.prepareTestData()));
       fetch('http://localhost:8080/tests/createTestAndQuestions', { // Замените URL на фактический URL вашего API
         method: 'POST',
         headers: {
@@ -126,6 +131,8 @@ export default {
           })
           .then(data => {
             console.log('Тест успешно отправлен:', data);
+            this.isTestSubmitted = true; // Установка флага успешной отправки
+
             // Обработка успешной отправки, например, перенаправление на другую страницу
           })
           .catch(error => {

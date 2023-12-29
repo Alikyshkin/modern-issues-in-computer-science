@@ -70,7 +70,8 @@ export default {
       testName: '',
       questions: [],
       testId: null,
-      testResult: null
+      testResult: null,
+      user_id: null
     };
   },
   computed: {
@@ -86,6 +87,10 @@ export default {
   mounted() {
     this.testId = this.$route.params.test_id; // Получение ID теста из параметров маршрута
     this.loadTest();
+    const userData = localStorage.getItem('currentUser');
+    const user = JSON.parse(userData);
+    this.user_id = user.isuNumber;
+    console.log(this.user_id)
   },
   methods: {
     submitTest() {
@@ -95,23 +100,24 @@ export default {
       const testDuration = (this.testDuration * 60) - this.remainingTime; // Время прохождения теста в секундах
 
       const testSubmission = {
-        isuNumber: 308517,
+        isuNumber: this.user_id,
         testId: this.testId,
         testTitle: this.testName,
-        questions: this.questions.map(q => ({
+        userAnswerDtos: this.questions.map(q => ({
           id: q.id,
           title: q.title,
-          userAnswer: q.userAnswer || q.userAnswers || ''
+          userAnswers: [q.userAnswer] // Changed to an array
         }))
       };
-console.log(testSubmission);
+console.log(JSON.stringify(testSubmission));
       axios.post('http://localhost:8080/tests/sendResults', testSubmission)
           .then(() => {
-            this.$router.push({ name: 'Analytics', params: { id: this.testId } }); // Переход на страницу аналитики
+            this.goToResults(this.user_id, this.testId);
           })
           .catch(error => {
             console.error('Ошибка при отправке теста:', error);
           });
+
     },
     loadTest() {
       axios.get(`http://localhost:8080/tests/${this.testId}`)
@@ -155,6 +161,9 @@ console.log(testSubmission);
       if (this.currentQuestionIndex > 0) {
         this.currentQuestionIndex--;
       }
+    },
+    goToResults(user_id, test_id) {
+      this.$router.push({ path: `/analytics/${test_id}` });
     },
     startTimer() {
       const timer = setInterval(() => {

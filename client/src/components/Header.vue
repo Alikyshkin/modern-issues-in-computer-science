@@ -13,36 +13,34 @@
           <a href="/" class="px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-200">Главная</a>
 
           <!-- Отображаем для авторизованных пользователей с ролями admin и teacher -->
-          <template v-if="isAuthenticated && (userRole === 'admin' || userRole === 'teacher')">
+          <div v-if="isAuthenticated && (userRole === 'admin' || userRole === 'TEACHER')">
             <a href="/tests-list" class="px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-200">Список
               тестов</a>
             <a href="/create-test" class="px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-200">Создать
               тест</a>
             <a href="/analytics" class="px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-200">Аналитика</a>
-          </template>
+          </div>
 
           <!-- Отображаем для авторизованных пользователей с ролью student -->
-          <template v-else-if="isAuthenticated && userRole === 'student'">
-            <a href="/tests-list" class="px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-200">Список
-              тестов</a>
-            <!-- Другие пункты меню для студентов -->
-          </template>
+          <div v-else-if="userRole === 'STUDENT'">
+            <a href="/tests-list" class="px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-200">Все тесты</a>
+          </div>
         </div>
       </div>
 
       <!-- Ссылки управления учетной записью -->
       <div :class="{'hidden': !isMenuOpen, 'flex': isMenuOpen}"
            class="flex-col lg:flex lg:flex-row lg:items-center space-y-4 lg:space-y-0 lg:space-x-4">
-        <template v-if="isAuthenticated">
+        <div v-if="isAuthenticated">
           <a href="/profile"
              class="px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-200">Профиль</a>
           <a @click="logout"
              class="cursor-pointer px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-200">Выйти</a>
-        </template>
-        <template v-else>
+        </div>
+        <div v-else>
           <a href="/auth" class="px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-200">Войти</a>
           <a href="/register" class="px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-200">Регистрация</a>
-        </template>
+        </div>
       </div>
     </nav>
   </header>
@@ -53,20 +51,39 @@ export default {
   name: 'Header',
   data() {
     return {
-      user: null, // Здесь мы храним информацию о пользователе
+      currentUser: null, // Здесь мы храним информацию о пользователе
       isMenuOpen: false, // состояние меню для мобильных устройств
     };
   },
   computed: {
     isAuthenticated() {
-      return !!this.user;
+      return !!this.currentUser;
+      console.log(this.currentUser.role)
+    },
+    currentUser() {
+      return JSON.parse(localStorage.getItem('currentUser'));
     },
     userRole() {
-      return this.user ? this.user.role : null;
+      return this.currentUser ? this.currentUser.role : null;
+    }
+  },
+  watch: {
+    // Watcher for changes in localStorage
+    '$route': function() {
+      this.currentUser = JSON.parse(localStorage.getItem('currentUser') || 'null');
     }
   },
   created() {
-    this.user = JSON.parse(localStorage.getItem('currentUser'));
+    try {
+      const userData = localStorage.getItem('currentUser');
+      if (userData) {
+        this.currentUser = JSON.parse(userData);
+      }
+    } catch (error) {
+      console.error('Failed to parse user data:', error);
+      // Обработка ошибки, например, удаление неверных данных из localStorage
+      localStorage.removeItem('currentUser');
+    }
   },
   methods: {
     logout() {
